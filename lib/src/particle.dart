@@ -110,10 +110,10 @@ class ParticleSystem extends ChangeNotifier {
   List<Particle> get particles => _particles;
   ParticleSystemStatus? get particleSystemStatus => _particleSystemStatus;
 
-  void update() {
+  void update(double animationScale) {
     _clean();
     if (_particleSystemStatus != ParticleSystemStatus.finished) {
-      _updateParticles();
+      _updateParticles(animationScale);
     }
 
     if (_particleSystemStatus == ParticleSystemStatus.started) {
@@ -144,9 +144,9 @@ class ParticleSystem extends ChangeNotifier {
     _leftBorder = _screenSize!.width - _rightBorder;
   }
 
-  void _updateParticles() {
+  void _updateParticles(double animationScale) {
     for (final particle in _particles) {
-      particle.update();
+      particle.update(animationScale);
     }
   }
 
@@ -278,7 +278,7 @@ class Particle {
     applyForce(vmath.Vector2(0, -1));
   }
 
-  void update() {
+  void update(double animationScale) {
     drag();
 
     if (_timeAlive < 5) {
@@ -292,16 +292,16 @@ class Particle {
 
     applyForce(vmath.Vector2(0, _gravity!));
 
-    _velocity.add(_acceleration);
-    _location.add(_velocity);
+    _velocity.add(_acceleration * animationScale);
+    _location.add(_velocity * animationScale);
     _acceleration.setZero();
 
     _aVelocityX += _aAcceleration / _mass;
     _aVelocityY += _aAcceleration / _mass;
     _aVelocityZ += _aAcceleration / _mass;
-    _aX += _aVelocityX;
-    _aY += _aVelocityY;
-    _aZ += _aVelocityZ;
+    _aX += _aVelocityX * animationScale;
+    _aY += _aVelocityY * animationScale;
+    _aZ += _aVelocityZ * animationScale;
   }
 
   Offset get location {
