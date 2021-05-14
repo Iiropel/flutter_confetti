@@ -135,6 +135,18 @@ class _ConfettiWidgetState extends State<ConfettiWidget>
   late Animation<double> _animation;
   late ParticleSystem _particleSystem;
 
+  double _animationScale = 1.0;
+
+  Duration _lastTickTime = Duration(milliseconds: 0);
+
+  double get animationScale {
+    var now = _animController.lastElapsedDuration ?? Duration(milliseconds: 0);
+    var deltaTime = now - _lastTickTime;
+    _lastTickTime = now;
+    double scale = deltaTime.inMilliseconds / 1000.0 * 60.0;
+    return (scale > 0.0) ? scale : 1.0;
+  }
+
   /// Keeps track of emition position on screen layout changes
   Offset? _emitterPosition;
 
@@ -195,7 +207,7 @@ class _ConfettiWidgetState extends State<ConfettiWidget>
       _animController.stop();
       return;
     }
-    _particleSystem.update();
+    _particleSystem.update(animationScale);
   }
 
   void _animationStatusListener(AnimationStatus status) {
